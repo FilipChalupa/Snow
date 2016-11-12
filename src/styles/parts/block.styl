@@ -1,0 +1,80 @@
+$width = 2vw
+$height = 0.3vw
+$color = #FFFFFF
+
+.block
+	position relative
+	//background #000055
+	size $width 100vh
+
+	&:before
+		absolute top left right
+		margin 0 auto
+		size 100% $height
+		background $color
+		//background linear-gradient(top, black 5%, white 50%, black 95%)
+		animation 2s slide linear infinite
+		content ''
+
+	&-1
+		left 54vh
+		&:before
+			animation-delay -1s
+			animation-duration 4s
+
+	&-2
+		left 65vh
+		&:before
+			animation-delay -1.5s
+			animation-duration 5s
+
+	&-3
+		left 85vh
+		&:before
+			animation-delay 0s
+			animation-duration 4.5s
+
+	&-4
+		left 96vh
+		&:before
+			animation-delay -0.5s
+			animation-duration 5.5s
+
+	&-5
+		left 22vh
+		&:before
+			animation-delay -1.25s
+			animation-duration 5.25s
+
+	&-6
+		left 30vh
+		&:before
+			animation-delay -3.5s
+			animation-duration 4.75s
+
+	&-wrap
+		fixed top left right bottom
+		background #000000
+		display flex
+
+		&:before,
+		&:after
+			absolute left right
+			z-index 1
+			background #000000
+			content ''
+
+		&:before
+			top 0
+			height 10vh
+
+		&:after
+			bottom 0
+			height 5.5vh
+
+
+@keyframes slide
+	0%
+		transform translateY((-1 * $height))
+	100%
+		transform translateY(100vh)
