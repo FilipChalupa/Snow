@@ -5,13 +5,12 @@ append vars
 	- var description = 'Sample project structure used in manGoweb'
 
 block content
-	.block-wrap
-		.block.block-1
-		.block.block-2
-		.block.block-3
-		.block.block-4
-		.block.block-5
-		.block.block-6
+	canvas.snow#snow
+	script.
+		initComponents.push({
+			name: 'snow',
+			place: '#snow',
+		})
 
 
 

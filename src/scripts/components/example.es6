@@ -8,7 +8,7 @@ var Component = require('./component')
  * - DOM event listeners are in Backbone style
  *
  */
-module.exports = class Example extends Component {
+module.exports = class extends Component {
 
 	constructor(el, data) {
 		super(el, data)
@@ -20,9 +20,9 @@ module.exports = class Example extends Component {
 		}
 	}
 
-	handleClick(e, self) {
+	handleClick(e) {
 		e.preventDefault()
-		alert(self.data)
+		alert(this.data)
 	}
 
 }
