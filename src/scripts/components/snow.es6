@@ -1,5 +1,6 @@
 let Component = require('./component')
 let Column = require('./parts/column')
+let Flake = require('./parts/flake')
 let uniqId = require('../utils/uniqId')
 let isPointInPolygon = require('../utils/isPointInPolygon')
 let distance = require('../utils/distance')
@@ -11,6 +12,7 @@ const KEYS = Object.freeze({
 	'delete': 46,
 	'backspace': 8,
 	'enter': 13,
+	'space': 32,
 })
 
 const FULL_ANGLE = 2 * Math.PI
@@ -42,6 +44,13 @@ module.exports = class Snow extends Component {
 		this.columns = []
 
 		this.activeColumn = null
+
+		this.flakes = []
+
+		this.flakesCountLimit = 5
+		this.flakeLifeSpan = 2000
+
+		this.flakeAddTimeout = null
 
 		document.onkeyup = (e) => {
 			this.handleKeyDown(e)
@@ -100,6 +109,7 @@ module.exports = class Snow extends Component {
 				break
 			case KEYS['+']:
 			case KEYS['enter']:
+			case KEYS['space']:
 				this.addColumn()
 				break
 			case KEYS['delete']:
@@ -114,6 +124,46 @@ module.exports = class Snow extends Component {
 
 	toggleEditMode() {
 		this.editMode = !this.editMode
+
+		if (this.editMode) {
+			this.flakes = []
+			this.clearFlakeAddTimeout()
+		} else {
+			this.movingVertex = false
+		}
+	}
+
+	clearFlakeAddTimeout() {
+		clearTimeout(this.flakeAddTimeout)
+		this.flakeAddTimeout = null
+	}
+
+	addFlake() {
+		let columnIndex = Math.floor(Math.random() * this.columns.length)
+		this.flakes.push(
+			new Flake(
+				uniqId(),
+				this.ctx,
+				this.columns[columnIndex].getVertices(),
+				this.flakeLifeSpan,
+				10,
+				'#FF00FF',
+				(e) => {this.flakeFinished(e)}
+			)
+		)
+	}
+
+	flakeFinished(flake) {
+		this.removeFlake(flake.getId())
+	}
+
+	removeFlake(id) {
+		for (let i = this.flakes.length-1; i >= 0; i--) {
+			if (id === this.flakes[i].getId()) {
+				this.flakes.splice(i, 1)
+				break
+			}
+		}
 	}
 
 	removeActiveColumn() {
@@ -208,6 +258,18 @@ module.exports = class Snow extends Component {
 	loop() {
 		this.render()
 		requestAnimationFrame(() => {this.loop()})
+
+		if (!this.editMode && this.columns.length) {
+			if (this.flakeAddTimeout === null && this.flakes.length < (this.flakesCountLimit * 2)) {
+				this.flakeAddTimeout = setTimeout(
+					() => {
+						this.addFlake(),
+						this.flakeAddTimeout = null
+					},
+					(this.flakeLifeSpan / this.flakesCountLimit) * (0.8 + 0.4 * Math.random())
+				)
+			}
+		}
 	}
 
 	render() {
@@ -217,8 +279,11 @@ module.exports = class Snow extends Component {
 			this.renderEdit()
 		} else {
 			this.columns.forEach((column) => {
-			column.renderSolid('#FFFFFF')
-		})
+				column.renderSolid('#FFFFFF')
+			})
+			this.flakes.forEach((flake) => {
+				flake.render()
+			})
 		}
 	}
 
