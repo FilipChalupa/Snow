@@ -32,6 +32,8 @@ const INACTIVE_COLOR = '#0000FF'
 
 const ACTIVE_COLOR = '#FFFFFF'
 
+const DEFAULT_ENVIRONMENT = 'Snow'
+
 const DEFAULT_OPTIONS = Object.freeze({
 	Snow: {
 		rate: 60, // Per minute
@@ -68,7 +70,7 @@ module.exports = class Snow extends Component {
 
 		this.environment = null
 
-		this.environmentName = 'Storm'
+		this.environmentName = DEFAULT_ENVIRONMENT
 
 		this.options = Object.assign({}, DEFAULT_OPTIONS)
 
@@ -192,6 +194,7 @@ module.exports = class Snow extends Component {
 
 	save() {
 		let data = {
+			environment: this.environmentName,
 			options: this.options,
 			columns: [],
 		}
@@ -209,6 +212,7 @@ module.exports = class Snow extends Component {
 		if (!data) {
 			return
 		}
+		this.environmentName = data.environment
 		this.options = Object.assign(this.options, data.options)
 		this.columns = []
 		this.activeColumn = null
