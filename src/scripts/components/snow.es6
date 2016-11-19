@@ -48,7 +48,6 @@ module.exports = class Snow extends Component {
 		this.flakes = []
 
 		this.flakesCountLimit = 5
-		this.flakeLifeSpan = 2000
 
 		this.flakeAddTimeout = null
 
@@ -145,9 +144,9 @@ module.exports = class Snow extends Component {
 				uniqId(),
 				this.ctx,
 				this.columns[columnIndex].getVertices(),
-				this.flakeLifeSpan,
+				20,
 				10,
-				'#FF00FF',
+				[255,0,255],
 				(e) => {this.flakeFinished(e)}
 			)
 		)
@@ -260,13 +259,13 @@ module.exports = class Snow extends Component {
 		requestAnimationFrame(() => {this.loop()})
 
 		if (!this.editMode && this.columns.length) {
-			if (this.flakeAddTimeout === null && this.flakes.length < (this.flakesCountLimit * 2)) {
+			if (this.flakeAddTimeout === null && this.flakes.length < this.flakesCountLimit) {
 				this.flakeAddTimeout = setTimeout(
 					() => {
 						this.addFlake(),
 						this.flakeAddTimeout = null
 					},
-					(this.flakeLifeSpan / this.flakesCountLimit) * (0.8 + 0.4 * Math.random())
+					800* Math.random()
 				)
 			}
 		}
