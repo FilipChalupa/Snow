@@ -38,7 +38,7 @@ module.exports = class Snow extends Environment {
 
 		this.flakeAddTimeout = setTimeout(() => {
 			this.addFlake()
-		}, 60000 / this.options.rate)
+		}, 60000 / (this.options.rate) * (Math.random() * 0.4 + 0.8))
 	}
 
 	flakeFinished(flake) {
