@@ -1,6 +1,7 @@
 let Environment = require('./environment')
 let Flake = require('../parts/flake')
 let uniqId = require('../../utils/uniqId')
+let exponentialRandom = require('../../utils/exponentialRandom')
 
 module.exports = class Snow extends Environment {
 
@@ -10,6 +11,11 @@ module.exports = class Snow extends Environment {
 		this.flakes = []
 		this.flakesRate = 60 // Per minut
 		this.flakeAddTimeout = null
+
+		this.columnsRandomQueue = []
+		for (let i = this.columns.length-1; i >= 0; i--) {
+			this.columnsRandomQueue[i] = i
+		}
 
 		if (this.columns.length) {
 			this.addFlake()
@@ -21,13 +27,22 @@ module.exports = class Snow extends Environment {
 		this.flakeAddTimeout = null
 	}
 
+	getRandomColumnIndex() {
+		let randomQueueIndex = Math.floor(exponentialRandom() * this.columnsRandomQueue.length)
+		let columnIndex = this.columnsRandomQueue[randomQueueIndex]
+		for (let i = randomQueueIndex; i < this.columnsRandomQueue.length-1; i++) {
+			this.columnsRandomQueue[i] = this.columnsRandomQueue[i+1]
+		}
+		this.columnsRandomQueue[this.columnsRandomQueue.length-1] = columnIndex
+		return columnIndex
+	}
+
 	addFlake() {
-		let columnIndex = Math.floor(Math.random() * this.columns.length)
 		this.flakes.push(
 			new Flake(
 				uniqId(),
 				this.ctx,
-				this.columns[columnIndex].getVertices(),
+				this.columns[this.getRandomColumnIndex()].getVertices(),
 				20,
 				10,
 				[255,255,255],
