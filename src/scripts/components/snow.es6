@@ -52,6 +52,17 @@ module.exports = class Snow extends Component {
 
 		this.environment = null
 
+		this.environmentName = 'Snow'
+
+		this.options = {
+			Snow: {
+				rate: 60, // Per minute
+				height: 10,
+				speed: 20,
+				color: [255,255,255],
+			}
+		}
+
 		if (this.data.data) {
 			this.loadFromData(this.data.data)
 			this.runEnvironment()
@@ -142,6 +153,7 @@ module.exports = class Snow extends Component {
 
 	save() {
 		let data = {
+			options: this.options,
 			columns: [],
 		}
 		this.columns.forEach((column) => {
@@ -158,6 +170,7 @@ module.exports = class Snow extends Component {
 		if (!data) {
 			return
 		}
+		this.options = Object.assign(this.options, data.options)
 		this.columns = []
 		this.activeColumn = null
 		this.movingVertex = false
@@ -180,9 +193,13 @@ module.exports = class Snow extends Component {
 		}
 	}
 
+	createEnvironment(name) {
+		return new environments[name](this.ctx, this.columns, this.options[name])
+	}
+
 	runEnvironment() {
 		this.editMode = false
-		this.environment = new environments.Snow(this.ctx, this.columns)
+		this.environment = this.createEnvironment(this.environmentName)
 	}
 
 	removeActiveColumn() {

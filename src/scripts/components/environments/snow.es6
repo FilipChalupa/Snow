@@ -5,11 +5,10 @@ let ExponentialQueue = require('../../utils/exponentialQueue')
 
 module.exports = class Snow extends Environment {
 
-	constructor(ctx, columns) {
-		super(ctx, columns)
+	constructor(ctx, columns, options) {
+		super(ctx, columns, options)
 
 		this.flakes = []
-		this.flakesRate = 60 // Per minute
 		this.flakeAddTimeout = null
 
 		this.columnsRandomQueue = new ExponentialQueue(this.columns.length)
@@ -30,16 +29,16 @@ module.exports = class Snow extends Environment {
 				uniqId(),
 				this.ctx,
 				this.columns[this.columnsRandomQueue.getIndex()].getVertices(),
-				20,
-				10,
-				[255,255,255],
+				this.options.speed,
+				this.options.height,
+				this.options.color,
 				(e) => {this.flakeFinished(e)}
 			)
 		)
 
 		this.flakeAddTimeout = setTimeout(() => {
 			this.addFlake()
-		}, 60000 / this.flakesRate)
+		}, 60000 / this.options.rate)
 	}
 
 	flakeFinished(flake) {
