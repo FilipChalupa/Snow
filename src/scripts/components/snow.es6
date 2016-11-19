@@ -5,6 +5,7 @@ let isPointInPolygon = require('../utils/isPointInPolygon')
 let distance = require('../utils/distance')
 let environments = {
 	Snow: require('./environments/snow'),
+	Storm: require('./environments/storm'),
 }
 
 const KEYS = Object.freeze({
@@ -30,6 +31,19 @@ const INACTIVE_COLOR = '#0000FF'
 
 const ACTIVE_COLOR = '#FFFFFF'
 
+const DEFAULT_OPTIONS = Object.freeze({
+	Snow: {
+		rate: 60, // Per minute
+		height: 10,
+		speed: 20,
+		color: [255,255,255],
+	},
+	Storm: {
+		rate: 100, // Per minute
+		color: [255,255,255],
+	}
+})
+
 /**
  * Snow component class
  */
@@ -52,16 +66,9 @@ module.exports = class Snow extends Component {
 
 		this.environment = null
 
-		this.environmentName = 'Snow'
+		this.environmentName = 'Storm'
 
-		this.options = {
-			Snow: {
-				rate: 60, // Per minute
-				height: 10,
-				speed: 20,
-				color: [255,255,255],
-			}
-		}
+		this.options = Object.assign({}, DEFAULT_OPTIONS)
 
 		if (this.data.data) {
 			this.loadFromData(this.data.data)

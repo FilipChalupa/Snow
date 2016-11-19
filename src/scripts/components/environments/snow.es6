@@ -9,7 +9,7 @@ module.exports = class Snow extends Environment {
 		super(ctx, columns, options)
 
 		this.flakes = []
-		this.flakeAddTimeout = null
+		this.timeout = null
 
 		this.columnsRandomQueue = new ExponentialQueue(this.columns.length)
 
@@ -18,9 +18,9 @@ module.exports = class Snow extends Environment {
 		}
 	}
 
-	clearFlakeAddTimeout() {
-		clearTimeout(this.flakeAddTimeout)
-		this.flakeAddTimeout = null
+	clearTimeout() {
+		clearTimeout(this.timeout)
+		this.timeout = null
 	}
 
 	addFlake() {
@@ -36,7 +36,7 @@ module.exports = class Snow extends Environment {
 			)
 		)
 
-		this.flakeAddTimeout = setTimeout(() => {
+		this.timeout = setTimeout(() => {
 			this.addFlake()
 		}, 60000 / (this.options.rate) * (Math.random() * 0.4 + 0.8))
 	}
@@ -62,7 +62,7 @@ module.exports = class Snow extends Environment {
 	}
 
 	destroy() {
-		this.clearFlakeAddTimeout()
+		this.clearTimeout()
 	}
 
 }
