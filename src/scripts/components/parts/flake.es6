@@ -58,6 +58,9 @@ module.exports = class Flake {
 				opacity = progressIn / this.lengthInProgress
 			} else if (progressIn > 1 - 2 * this.lengthInProgress) {
 				opacity = 1 - (progressIn - (1 - 2 * this.lengthInProgress)) / this.lengthInProgress
+				if (opacity < 0) {
+					opacity = 0
+				}
 			}
 
 			let flakeVertices = this.getFlakeVertices(progressIn)
