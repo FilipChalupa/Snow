@@ -346,6 +346,14 @@ module.exports = class Snow extends Component {
 	loop() {
 		this.render()
 		requestAnimationFrame(() => {this.loop()})
+
+		/* // FPS logging
+		this.lastLoop = this.lastLoop || new Date
+		this.thisLoop = new Date
+		let fps = Math.floor(1000 / (this.thisLoop - this.lastLoop))
+		this.lastLoop = this.thisLoop
+		console.log('FPS: ', fps)
+		*/
 	}
 
 	render() {
