@@ -47,7 +47,7 @@ module.exports = class Snow extends Component {
 
 		this.flakes = []
 
-		this.flakesCountLimit = 5
+		this.flakesRate = 60 // Per minut
 
 		this.flakeAddTimeout = null
 
@@ -128,6 +128,9 @@ module.exports = class Snow extends Component {
 			this.flakes = []
 			this.clearFlakeAddTimeout()
 		} else {
+			if (this.columns.length) {
+				this.addFlake()
+			}
 			this.movingVertex = false
 		}
 	}
@@ -146,10 +149,14 @@ module.exports = class Snow extends Component {
 				this.columns[columnIndex].getVertices(),
 				20,
 				10,
-				[255,0,255],
+				[255,255,255],
 				(e) => {this.flakeFinished(e)}
 			)
 		)
+
+		this.flakeAddTimeout = setTimeout(() => {
+			this.addFlake()
+		}, 60000 / this.flakesRate)
 	}
 
 	flakeFinished(flake) {
@@ -257,18 +264,6 @@ module.exports = class Snow extends Component {
 	loop() {
 		this.render()
 		requestAnimationFrame(() => {this.loop()})
-
-		if (!this.editMode && this.columns.length) {
-			if (this.flakeAddTimeout === null && this.flakes.length < this.flakesCountLimit) {
-				this.flakeAddTimeout = setTimeout(
-					() => {
-						this.addFlake(),
-						this.flakeAddTimeout = null
-					},
-					800* Math.random()
-				)
-			}
-		}
 	}
 
 	render() {
@@ -277,9 +272,9 @@ module.exports = class Snow extends Component {
 		if (this.editMode) {
 			this.renderEdit()
 		} else {
-			this.columns.forEach((column) => {
+			/*this.columns.forEach((column) => {
 				column.renderSolid('#FFFFFF')
-			})
+			})*/
 			this.flakes.forEach((flake) => {
 				flake.render()
 			})
