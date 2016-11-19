@@ -1,5 +1,6 @@
 const HANDEL_RADIUS = 5
-const HANDEL_COLOR = '#00FF00'
+const HANDEL_TOP_COLOR = '#00FF00'
+const HANDEL_BOTTOM_COLOR = '#FF0000'
 
 const FULL_ANGLE = 2 * Math.PI
 
@@ -60,7 +61,7 @@ module.exports = class Column {
 	}
 
 	renderHandels() {
-		this.vertices.forEach((vertex) => {
+		this.vertices.forEach((vertex, i) => {
 			this.ctx.beginPath()
 			this.ctx.arc(
 				vertex[0],
@@ -69,7 +70,7 @@ module.exports = class Column {
 				0,
 				FULL_ANGLE
 			)
-			this.ctx.fillStyle = HANDEL_COLOR
+			this.ctx.fillStyle = i < 2 ? HANDEL_TOP_COLOR : HANDEL_BOTTOM_COLOR
 			this.ctx.fill()
 		})
 	}
