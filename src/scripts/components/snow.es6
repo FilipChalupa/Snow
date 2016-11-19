@@ -163,21 +163,26 @@ module.exports = class Snow extends Component {
 	}
 
 	changeEnvironment() {
-		if (!this.editMode) {
-			return
-		}
 		let match = false
 		for (let name in environments) {
 			if (match) {
 				this.environmentName = name
-				return
+				match = false
+				break
 			}
 			if (name === this.environmentName) {
 				match = true
 			}
 		}
-		for (this.environmentName in environments) {
-			break
+		if (match) {
+			for (this.environmentName in environments) {
+				break
+			}
+		}
+
+		if (!this.editMode) {
+			this.destroyEnvironment()
+			this.createEnvironment()
 		}
 	}
 
@@ -217,23 +222,27 @@ module.exports = class Snow extends Component {
 		this.editMode = !this.editMode
 
 		if (this.editMode) {
-			if (this.environment) {
-				this.environment.destroy()
-				this.environment = null
-			}
+			this.destroyEnvironment()
 		} else {
 			this.movingVertex = false
 			this.runEnvironment()
 		}
 	}
 
-	createEnvironment(name) {
-		return new environments[name](this.ctx, this.columns, this.options[name])
+	createEnvironment() {
+		this.environment = new environments[this.environmentName](this.ctx, this.columns, this.options[this.environmentName])
+	}
+
+	destroyEnvironment() {
+		if (this.environment) {
+			this.environment.destroy()
+			this.environment = null
+		}
 	}
 
 	runEnvironment() {
 		this.editMode = false
-		this.environment = this.createEnvironment(this.environmentName)
+		this.createEnvironment()
 	}
 
 	removeActiveColumn() {
