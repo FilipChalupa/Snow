@@ -9,14 +9,15 @@ let environments = {
 }
 
 const KEYS = Object.freeze({
-	'e': 69,
-	'r': 82,
-	's': 83,
-	'o': 79,
 	'+': 107,
 	'-': 109,
-	'delete': 46,
+	'c': 67,
+	'e': 69,
+	'o': 79,
+	'r': 82,
+	's': 83,
 	'backspace': 8,
+	'delete': 46,
 	'enter': 13,
 	'space': 32,
 })
@@ -150,11 +151,33 @@ module.exports = class Snow extends Component {
 			case KEYS['o']:
 				this.load()
 				break
+			case KEYS['c']:
+				this.changeEnvironment()
+				break
 			case KEYS['r']:
 				this.reload()
 				break
 			default:
 				console.log('Key code: ' + e.keyCode)
+		}
+	}
+
+	changeEnvironment() {
+		if (!this.editMode) {
+			return
+		}
+		let match = false
+		for (let name in environments) {
+			if (match) {
+				this.environmentName = name
+				return
+			}
+			if (name === this.environmentName) {
+				match = true
+			}
+		}
+		for (this.environmentName in environments) {
+			break
 		}
 	}
 
