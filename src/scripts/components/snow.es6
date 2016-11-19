@@ -7,6 +7,8 @@ let distance = require('../utils/distance')
 
 const KEYS = Object.freeze({
 	'e': 69,
+	's': 83,
+	'o': 79,
 	'+': 107,
 	'-': 109,
 	'delete': 46,
@@ -104,11 +106,11 @@ module.exports = class Snow extends Component {
 	handleKeyDown(e) {
 		switch (e.keyCode) {
 			case KEYS['e']:
+			case KEYS['space']:
 				this.toggleEditMode()
 				break
 			case KEYS['+']:
 			case KEYS['enter']:
-			case KEYS['space']:
 				this.addColumn()
 				break
 			case KEYS['delete']:
@@ -116,9 +118,39 @@ module.exports = class Snow extends Component {
 			case KEYS['-']:
 				this.removeActiveColumn()
 				break
+			case KEYS['s']:
+				this.save()
+				break
+			case KEYS['o']:
+				this.load()
+				break
 			default:
 				console.log('Key code: ' + e.keyCode)
 		}
+	}
+
+	save() {
+		let data = {
+			columns: [],
+		}
+		this.columns.forEach((column) => {
+			data.columns.push(column.getVertices())
+		})
+		localStorage.setItem('data', JSON.stringify(data))
+	}
+
+	load() {
+		let data = localStorage.getItem('data')
+		if (!data) {
+			return
+		}
+		this.columns = []
+		this.activeColumn = null
+		this.movingVertex = false
+		data = JSON.parse(data)
+		data.columns.forEach((column) => {
+			this.createColumn(column)
+		})
 	}
 
 	toggleEditMode() {
@@ -194,30 +226,35 @@ module.exports = class Snow extends Component {
 		if (!this.editMode) {
 			return
 		}
+		let column = this.createColumn([
+			[
+				this.mousePosition[0] - DEFAULT_COLUMN_SPREAD,
+				this.mousePosition[1] - DEFAULT_COLUMN_SPREAD,
+			],
+			[
+				this.mousePosition[0] + DEFAULT_COLUMN_SPREAD,
+				this.mousePosition[1] - DEFAULT_COLUMN_SPREAD,
+			],
+			[
+				this.mousePosition[0] + DEFAULT_COLUMN_SPREAD,
+				this.mousePosition[1] + DEFAULT_COLUMN_SPREAD,
+			],
+			[
+				this.mousePosition[0] - DEFAULT_COLUMN_SPREAD,
+				this.mousePosition[1] + DEFAULT_COLUMN_SPREAD,
+			]
+		])
+		this.activeColumn = column
+	}
+
+	createColumn(vertices) {
 		let column = new Column(
 			uniqId(),
 			this.ctx,
-			[
-				[
-					this.mousePosition[0] - DEFAULT_COLUMN_SPREAD,
-					this.mousePosition[1] - DEFAULT_COLUMN_SPREAD,
-				],
-				[
-					this.mousePosition[0] + DEFAULT_COLUMN_SPREAD,
-					this.mousePosition[1] - DEFAULT_COLUMN_SPREAD,
-				],
-				[
-					this.mousePosition[0] + DEFAULT_COLUMN_SPREAD,
-					this.mousePosition[1] + DEFAULT_COLUMN_SPREAD,
-				],
-				[
-					this.mousePosition[0] - DEFAULT_COLUMN_SPREAD,
-					this.mousePosition[1] + DEFAULT_COLUMN_SPREAD,
-				]
-			]
+			vertices
 		)
 		this.columns.push(column)
-		this.activeColumn = column
+		return column
 	}
 
 	resize() {
@@ -272,9 +309,6 @@ module.exports = class Snow extends Component {
 		if (this.editMode) {
 			this.renderEdit()
 		} else {
-			/*this.columns.forEach((column) => {
-				column.renderSolid('#FFFFFF')
-			})*/
 			this.flakes.forEach((flake) => {
 				flake.render()
 			})
