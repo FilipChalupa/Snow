@@ -52,6 +52,11 @@ module.exports = class Snow extends Component {
 
 		this.environment = null
 
+		if (this.data.data) {
+			this.loadFromData(this.data.data)
+			this.runEnvironment()
+		}
+
 		document.onkeyup = (e) => {
 			this.handleKeyDown(e)
 		}
@@ -146,14 +151,16 @@ module.exports = class Snow extends Component {
 	}
 
 	load() {
-		let data = localStorage.getItem('data')
+		this.loadFromData(JSON.parse(localStorage.getItem('data')))
+	}
+
+	loadFromData(data) {
 		if (!data) {
 			return
 		}
 		this.columns = []
 		this.activeColumn = null
 		this.movingVertex = false
-		data = JSON.parse(data)
 		data.columns.forEach((column) => {
 			this.createColumn(column)
 		})
@@ -169,8 +176,13 @@ module.exports = class Snow extends Component {
 			}
 		} else {
 			this.movingVertex = false
-			this.environment = new environments.Snow(this.ctx, this.columns)
+			this.runEnvironment()
 		}
+	}
+
+	runEnvironment() {
+		this.editMode = false
+		this.environment = new environments.Snow(this.ctx, this.columns)
 	}
 
 	removeActiveColumn() {
