@@ -1,4 +1,5 @@
 let distance = require('../../utils/distance')
+let getWayPoint = require('../../utils/getWayPoint')
 
 module.exports = class Flake {
 
@@ -14,25 +15,11 @@ module.exports = class Flake {
 
 		this.finished = false
 
-		this.topMid = this.getMidPoint(this.vertices[0], this.vertices[1])
-		this.bottomMid = this.getMidPoint(this.vertices[2], this.vertices[3])
+		this.topMid = getWayPoint(this.vertices[0], this.vertices[1], 0.5)
+		this.bottomMid = getWayPoint(this.vertices[2], this.vertices[3], 0.5)
 		this.direction = Math.atan2(this.topMid[1] - this.bottomMid[1], this.topMid[0] - this.bottomMid[0]) + Math.PI / 2
 		this.distance = distance(this.topMid, this.bottomMid)
 		this.lengthInProgress = length / this.distance
-	}
-
-	getMidPoint(a, b) {
-		return [
-			b[0] + (a[0] - b[0]) / 2,
-			b[1] + (a[1] - b[1]) / 2
-		]
-	}
-
-	getWayPoint(a, b, progress) {
-		return [
-			a[0] + (b[0] - a[0]) * progress,
-			a[1] + (b[1] - a[1]) * progress
-		]
 	}
 
 	getId() {
@@ -41,10 +28,10 @@ module.exports = class Flake {
 
 	getFlakeVertices(progress) {
 		return [
-			this.getWayPoint(this.vertices[0], this.vertices[3], progress),
-			this.getWayPoint(this.vertices[1], this.vertices[2], progress),
-			this.getWayPoint(this.vertices[1], this.vertices[2], progress + this.lengthInProgress),
-			this.getWayPoint(this.vertices[0], this.vertices[3], progress + this.lengthInProgress),
+			getWayPoint(this.vertices[0], this.vertices[3], progress),
+			getWayPoint(this.vertices[1], this.vertices[2], progress),
+			getWayPoint(this.vertices[1], this.vertices[2], progress + this.lengthInProgress),
+			getWayPoint(this.vertices[0], this.vertices[3], progress + this.lengthInProgress),
 		]
 	}
 
