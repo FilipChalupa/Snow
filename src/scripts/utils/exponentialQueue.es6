@@ -1,4 +1,5 @@
 let exponentialRandom = require('./exponentialRandom')
+let shuffleArray = require('./shuffleArray')
 
 module.exports = class {
 
@@ -8,6 +9,7 @@ module.exports = class {
 		for (let i = size-1; i >= 0; i--) {
 			this.queue[i] = i
 		}
+		shuffleArray(this.queue)
 	}
 
 	getIndex() {
