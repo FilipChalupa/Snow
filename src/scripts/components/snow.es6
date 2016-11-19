@@ -1,12 +1,15 @@
 let Component = require('./component')
 let Column = require('./parts/column')
-let Flake = require('./parts/flake')
 let uniqId = require('../utils/uniqId')
 let isPointInPolygon = require('../utils/isPointInPolygon')
 let distance = require('../utils/distance')
+let environments = {
+	Snow: require('./environments/snow'),
+}
 
 const KEYS = Object.freeze({
 	'e': 69,
+	'r': 82,
 	's': 83,
 	'o': 79,
 	'+': 107,
@@ -47,11 +50,7 @@ module.exports = class Snow extends Component {
 
 		this.activeColumn = null
 
-		this.flakes = []
-
-		this.flakesRate = 60 // Per minut
-
-		this.flakeAddTimeout = null
+		this.environment = null
 
 		document.onkeyup = (e) => {
 			this.handleKeyDown(e)
@@ -124,9 +123,16 @@ module.exports = class Snow extends Component {
 			case KEYS['o']:
 				this.load()
 				break
+			case KEYS['r']:
+				this.reload()
+				break
 			default:
 				console.log('Key code: ' + e.keyCode)
 		}
+	}
+
+	reload() {
+		location.reload()
 	}
 
 	save() {
@@ -157,50 +163,13 @@ module.exports = class Snow extends Component {
 		this.editMode = !this.editMode
 
 		if (this.editMode) {
-			this.flakes = []
-			this.clearFlakeAddTimeout()
+			if (this.environment) {
+				this.environment.destroy()
+				this.environment = null
+			}
 		} else {
-			if (this.columns.length) {
-				this.addFlake()
-			}
 			this.movingVertex = false
-		}
-	}
-
-	clearFlakeAddTimeout() {
-		clearTimeout(this.flakeAddTimeout)
-		this.flakeAddTimeout = null
-	}
-
-	addFlake() {
-		let columnIndex = Math.floor(Math.random() * this.columns.length)
-		this.flakes.push(
-			new Flake(
-				uniqId(),
-				this.ctx,
-				this.columns[columnIndex].getVertices(),
-				20,
-				10,
-				[255,255,255],
-				(e) => {this.flakeFinished(e)}
-			)
-		)
-
-		this.flakeAddTimeout = setTimeout(() => {
-			this.addFlake()
-		}, 60000 / this.flakesRate)
-	}
-
-	flakeFinished(flake) {
-		this.removeFlake(flake.getId())
-	}
-
-	removeFlake(id) {
-		for (let i = this.flakes.length-1; i >= 0; i--) {
-			if (id === this.flakes[i].getId()) {
-				this.flakes.splice(i, 1)
-				break
-			}
+			this.environment = new environments.Snow(this.ctx, this.columns)
 		}
 	}
 
@@ -309,9 +278,7 @@ module.exports = class Snow extends Component {
 		if (this.editMode) {
 			this.renderEdit()
 		} else {
-			this.flakes.forEach((flake) => {
-				flake.render()
-			})
+			this.environment.render()
 		}
 	}
 
