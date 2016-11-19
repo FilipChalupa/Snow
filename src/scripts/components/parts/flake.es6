@@ -41,10 +41,10 @@ module.exports = class Flake {
 			let progress = ((nowTime - this.startTime) / 1000 * this.speed) / this.distance
 			let progressIn = progress * (1 - this.lengthInProgress)
 			let opacity = 1
-			if (progressIn < this.lengthInProgress) {
-				opacity = progressIn / this.lengthInProgress
-			} else if (progressIn > 1 - 2 * this.lengthInProgress) {
-				opacity = 1 - (progressIn - (1 - 2 * this.lengthInProgress)) / this.lengthInProgress
+			if (progress < this.lengthInProgress) {
+				opacity = progress / this.lengthInProgress
+			} else if (progress > 1 - this.lengthInProgress) {
+				opacity = 1 - (progress - (1 - this.lengthInProgress)) / this.lengthInProgress
 				if (opacity < 0) {
 					opacity = 0
 				}

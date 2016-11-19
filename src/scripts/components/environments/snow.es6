@@ -45,12 +45,13 @@ module.exports = class Snow extends Environment {
 	}
 
 	removeFlake(id) {
+		let newFlakes = []
 		for (let i = this.flakes.length-1; i >= 0; i--) {
-			if (id === this.flakes[i].getId()) {
-				this.flakes.splice(i, 1)
-				break
+			if (id !== this.flakes[i].getId()) {
+				newFlakes.push(this.flakes[i])
 			}
 		}
+		this.flakes = newFlakes
 	}
 
 	render() {
