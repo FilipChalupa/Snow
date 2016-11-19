@@ -9,7 +9,7 @@ module.exports = class Snow extends Environment {
 		super(ctx, columns)
 
 		this.flakes = []
-		this.flakesRate = 60 // Per minut
+		this.flakesRate = 60 // Per minute
 		this.flakeAddTimeout = null
 
 		this.columnsRandomQueue = []
