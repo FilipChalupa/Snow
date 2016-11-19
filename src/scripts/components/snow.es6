@@ -59,6 +59,7 @@ module.exports = class Snow extends Component {
 		this.movingVertex = false
 
 		this.mousePosition = [0, 0]
+		this.mouseDown = false
 
 		this.columns = []
 
@@ -103,6 +104,8 @@ module.exports = class Snow extends Component {
 	}
 
 	handleMouseDown(e) {
+		this.mouseDown = true
+
 		if (this.activeColumn) {
 			let vertices = this.activeColumn.getVertices()
 				for (let i = vertices.length - 1; i >= 0; i--) {
@@ -122,6 +125,7 @@ module.exports = class Snow extends Component {
 	}
 
 	handleMouseUp(e) {
+		this.mouseDown = false
 		this.movingVertex = false
 	}
 
@@ -299,7 +303,7 @@ module.exports = class Snow extends Component {
 			0,
 			FULL_ANGLE
 		)
-		this.ctx.fillStyle = '#FFFF00'
+		this.ctx.fillStyle = this.mouseDown ? '#FFFF00' : '#FF0000'
 		this.ctx.fill()
 	}
 
